@@ -21,8 +21,24 @@ SELECT full_name FROM executor
 WHERE full_name NOT LIKE '% %';
 
 --Задание 2.5 Название треков, которые содержат слово «мой» или «my».
+--Вариант 1
 SELECT full_name FROM track
-WHERE full_name iLIKE '%my%' OR full_name iLIKE '%мой%';
+WHERE string_to_array(lower(full_name), ' ') && ARRAY['мой', 'my'];
+
+--Вариант 2
+SELECT full_name FROM track
+WHERE full_name iLIKE 'my %'
+OR full_name iLIKE '% my'
+OR full_name iLIKE ' my '
+OR full_name iLIKE '% my %'
+OR full_name iLIKE 'мой %'
+OR full_name iLIKE '% мой'
+OR full_name iLIKE ' мой '
+OR full_name iLIKE '% мой %';
+
+--Вариант 3
+SELECT full_name FROM track
+WHERE full_name ~* '(^my | my$| my |^мой | мой$| мой )\y';
 
 -- Задание 3.1 Количество исполнителей в каждом жанре.
 SELECT g.full_name, COUNT(*) FROM genre g
@@ -32,10 +48,9 @@ GROUP BY g.full_name
 ORDER BY COUNT(*)DESC;
  
 -- Задание 3.2 Количество треков, вошедших в альбомы 2019–2020 годов.
-SELECT a.full_name, COUNT(*) FROM album a
+SELECT COUNT(*) FROM album a
 JOIN track t ON t.id_album = a.id_album
 WHERE year_issue BETWEEN 2019 AND 2021
-GROUP BY a.full_name;
  
  -- Задание 3.3 Средняя продолжительность треков по каждому альбому.
 SELECT a.full_name, ROUND(AVG(t.duration), 0) FROM album a
@@ -62,16 +77,12 @@ JOIN executor ex ON ea.id_executor = ex.id_executor
 WHERE ex.full_name = 'Nirvana';
  
  -- Задание 4.1 Названия альбомов, в которых присутствуют исполнители более чем одного жанра.
-SELECT a.full_name FROM album a
-WHERE a.full_name IN (
-	SELECT a.full_name FROM album a
-    JOIN executor_album ea ON a.id_album = ea.id_album
-    JOIN executor ex ON ea.id_executor = ex.id_executor
-    JOIN genre_executor ge ON ex.id_executor = ge.id_executor
-    JOIN genre g ON ge.id_genre = g.id_genre
-    GROUP BY a.full_name
-    HAVING COUNT(g.full_name) > 1
-);
+SELECT DISTINCT a.full_name FROM album a
+JOIN executor_album ea ON a.id_album = ea.id_album
+JOIN executor ex ON ea.id_executor = ex.id_executor
+JOIN genre_executor ge ON ex.id_executor = ge.id_executor
+GROUP BY a.full_name, ge.id_executor
+HAVING COUNT(ge.id_genre) > 1;
 
 --Задание 4.2 Наименования треков, которые не входят в сборники.
 SELECT full_name FROM track 

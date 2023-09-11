@@ -28,7 +28,15 @@ INSERT INTO track
     (5, 'Good Goodbye', '212', '4'),
     (6, 'Invisible', '223', '4'),
     (7, 'Sharp Edges', '185', '5'),
-    (8, 'Yezzy', '190', '5');
+    (8, 'Yezzy', '190', '5'),
+    (9, 'myself', '230', '1'),
+    (10, 'by myself', '180', '2'),
+    (11, 'bemy self', '200', '3'),
+    (12, 'myself by', '188', '4'),
+    (13, 'by myself by', '199', '5'),
+    (14, 'beemy', '201', '2'),
+    (15, 'premyne', '233', '4')
+    ;
 
 INSERT INTO genre_executor
     VALUES 
